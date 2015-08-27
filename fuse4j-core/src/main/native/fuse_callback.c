@@ -727,7 +727,7 @@ static int javafs_fsync(const char *path, int datasync, struct fuse_file_info *f
 // extended attributes support contributed by Steven Pearson <steven_pearson@final-step.com>
 // and then modified by Peter Levart <peter@select-tech.si> to fit the new errno returning scheme
 
-static int javafs_setxattr(const char *path, const char *name, const char *value, size_t size, int flags, uint32_t position)
+static int javafs_setxattr(const char *path, const char *name, const char *value, size_t size, int flags )
 {
    JNIEnv *env = get_env();
    jobject jPath = NULL;
@@ -737,14 +737,18 @@ static int javafs_setxattr(const char *path, const char *name, const char *value
 
    while(1)
    {
-      jobject jPath = (*env)->NewDirectByteBuffer(env, (void *)path, (jlong)strlen(path));
+      jPath = (*env)->NewDirectByteBuffer(env, (void *)path, (jlong)strlen(path));
       if (exception_check_jerrno(env, &jerrno)) break;
 
-      jobject jName = (*env)->NewDirectByteBuffer(env, (void *)name, (jlong)strlen(name));
+	  jName = (*env)->NewDirectByteBuffer(env, (void *)name, (jlong)strlen(name));
       if (exception_check_jerrno(env, &jerrno)) break;
 
-      jobject jValue = (*env)->NewDirectByteBuffer(env, (void *)value, (jlong)size);
+	  jValue = (*env)->NewDirectByteBuffer(env, (void *)value, (jlong)size);
       if (exception_check_jerrno(env, &jerrno)) break;
+
+	  // sdm
+	  jint position = 0;
+	  //mds
 
       jerrno = (*env)->CallIntMethod(env, fuseFS, FuseFS->method.setxattr__Ljava_nio_ByteBuffer_Ljava_nio_ByteBuffer_Ljava_nio_ByteBuffer_II, jPath, jName, jValue, (jint)flags, (jint)position);
       exception_check_jerrno(env, &jerrno);
@@ -762,7 +766,7 @@ static int javafs_setxattr(const char *path, const char *name, const char *value
    return -jerrno;
 }
 
-static int javafs_getxattr(const char *path, const char *name, char *value, size_t size, uint32_t position)
+static int javafs_getxattr(const char *path, const char *name, char *value, size_t size )
 {
    JNIEnv *env = get_env();
    jobject jPath = NULL;
@@ -796,7 +800,10 @@ static int javafs_getxattr(const char *path, const char *name, char *value, size
          jValue = (*env)->NewDirectByteBuffer(env, value , (jlong)size);
          if (exception_check_jerrno(env, &jerrno)) break;
 
-         jerrno = (*env)->CallIntMethod(env, fuseFS, FuseFS->method.getxattr__Ljava_nio_ByteBuffer_Ljava_nio_ByteBuffer_Ljava_nio_ByteBuffer_I, jPath, jName, jValue, (jint)position);
+		 // sdm
+		 jint position = 0;
+		 // mds
+         jerrno = (*env)->CallIntMethod(env, fuseFS, FuseFS->method.getxattr__Ljava_nio_ByteBuffer_Ljava_nio_ByteBuffer_Ljava_nio_ByteBuffer_I, jPath, jName, jValue, position);
          if (exception_check_jerrno(env, &jerrno)) break;
 
          // to obtain # of bytes read, get current position from ByteBuffer
@@ -957,6 +964,47 @@ static void javafs_destroy(void *data)
     }
 }
 
+// sdm
+#if 0
+static int javafs_ioctl(const char *path, int cmd, void *arg,
+						struct fuse_file_info *ffi, 
+						unsigned int flags, void *data) {
+  printf( "%s: path=%s, cmd=%d, arg=%p, flags=%u, data=%p\n",
+		  __FUNCTION__, path, cmd, arg, flags, data );
+
+  JNIEnv *env = get_env();
+  jobject jPath = NULL;
+  jobject jArg = NULL;
+  jint jerrno = 0;
+
+   while(1)
+   {
+	 jPath = (*env)->NewDirectByteBuffer(env, (void *)path, 
+										 (jlong)strlen(path));
+	 if (exception_check_jerrno(env, &jerrno)) break;
+
+	 /*
+    public int ioctl(ByteBuffer path, Object fh, int cmd, ByteBuffer arg,
+	int flags );
+	 */
+	 jobject jArg = NULL;
+	 jerrno = (*env)->CallIntMethod(env, fuseFS, FuseFS->method.ioctl__Ljava_nio_ByteBuffer_Ljava_lang_Object_I_Ljava_nio_ByteBuffer_J, jPath, read_file_handle(ffi), (jint)cmd, jArg, (jint)flags);
+	 exception_check_jerrno(env, &jerrno);
+	 break;
+   }
+
+   // cleanup
+
+   if (jPath != NULL) (*env)->DeleteLocalRef(env, jPath);
+   if (jArg != NULL) (*env)->DeleteLocalRef(env, jArg);
+
+   release_env(env);
+
+   return -jerrno;
+}
+#endif
+// mds
+
 
 struct fuse_operations javafs_oper = {
    getattr:    javafs_getattr,
@@ -994,5 +1042,7 @@ struct fuse_operations javafs_oper = {
    access:      NULL,
    create:      NULL,
    ftruncate:   NULL,
-   fgetattr:    NULL
+   fgetattr:    NULL,
+
+   //   ioctl: javafs_ioctl
 };

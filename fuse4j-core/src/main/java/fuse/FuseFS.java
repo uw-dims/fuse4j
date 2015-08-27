@@ -80,6 +80,13 @@ public interface FuseFS extends FilesystemConstants {
 
     public int removexattr(ByteBuffer path, ByteBuffer name);
 
+	// sdm
+	/*
+	  public int ioctl(ByteBuffer path, Object fh, int cmd, ByteBuffer arg,
+					 int flags );
+	*/
+	// mds
+	
     //
     // Lifecycle support
     // Needed when running in the background to give the system a chance to initialize.

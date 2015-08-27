@@ -9,18 +9,27 @@
 
 package fuse;
 
+
 import fuse.compat.Filesystem1;
 import fuse.compat.Filesystem1ToFilesystem2Adapter;
 import fuse.compat.Filesystem2;
 import fuse.compat.Filesystem2ToFilesystem3Adapter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import edu.uw.apl.nativelibloader.NativeLoader;
 
 public class FuseMount {
     private static final Log log = LogFactory.getLog(FuseMount.class);
 
+	static private final String artifact = "fuse4j-core";
     static {
-        System.loadLibrary("javafs");
+		try {
+			NativeLoader.load( FuseMount.class, artifact );
+		} catch( Throwable t ) {
+			throw new ExceptionInInitializerError( t );
+		}
     }
 
     private FuseMount() {

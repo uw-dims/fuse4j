@@ -636,7 +636,29 @@ public class Filesystem3ToFuseFSAdapter implements FuseFS {
         }
     }
 
+	// sdm, experimental, never really worked...
+	/*
+	  public int ioctl(ByteBuffer path, int cmd, ByteBuffer arg ) {
+        String pathStr = cs.decode(path).toString();
 
+        if (log != null && log.isDebugEnabled()) {
+            log.debug("read: path=" + pathStr + ", cmd=" + cmd +
+					  ", arg=" +  arg );
+        }
+
+        try {
+            return handleErrno(fs3.ioctl(pathStr, fh, buf, offset), buf);
+        }
+        catch(Exception e) {
+            return handleException(e);
+        }
+        if (log != null && log.isDebugEnabled()) {
+            log.debug("ioctl: path= " + pathStr + ", name=" + nameStr);
+        }
+	}
+	*/
+	// mds
+	
     // Lifecycle support is optional
     public int init() {
         if (lifecycleSupport == null) {
