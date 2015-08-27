@@ -4,10 +4,14 @@
 			     http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>fuse4j</groupId>
+  <parent>
+    <artifactId>fuse4j-parent</artifactId>
+    <groupId>fuse4j</groupId>
+    <version>3.0.0</version>
+  </parent>
+
   <artifactId>fuse4j-core</artifactId>
-  <version>2.4.0.0-SNAPSHOT</version>
-  
+    
   <properties>
     <!-- Override this by activating the 'tester' profile -->
     <skipTests>true</skipTests>
