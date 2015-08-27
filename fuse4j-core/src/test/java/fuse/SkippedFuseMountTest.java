@@ -24,6 +24,13 @@ import org.apache.commons.logging.LogFactory;
  * instead of this
  *
  * $ mvn test
+ *
+ * I was under the impression that each test class was run in a
+ * different VM, or at least by a distinct class loader, both of which
+ * would permit this test to run along with many others.  That appears
+ * not to be the case.
+ *
+ * @see FuseMount
  */
 
 public class SkippedFuseMountTest extends junit.framework.TestCase {
@@ -39,19 +46,28 @@ public class SkippedFuseMountTest extends junit.framework.TestCase {
 	
 		File mnt = new File( "mount" );
 		mnt.mkdirs();
+		mnt.deleteOnExit();
 		String[] args = { mnt.getName(), "-f" };
 
 		Log l = LogFactory.getLog( fs.getClass() );
 
 		/*
 		  Set system property 'PREFIX.LIBNAME.disabled', where PREFIX,
-		  LIBNAME are defined in pom.xml and transmitted down to
-		  platform-dependent Makefile(s).  The NativeLoader.load
-		  call then made by FuseMount will see this property set
-		  and skip trying to locate and load the native library.
+		  LIBNAME are likely defined in pom.xml and transmitted down
+		  to platform-dependent Makefile(s).  The NativeLoader.load
+		  call then made by fuse.FuseMount will see this property set
+		  and skip trying to locate and load the native library. This
+		  renders the call chain from fuse.FuseMount.mount
+		  unsatisfiable (hence the UnsatisfiedLinkError), since the
+		  primitive-most mount call is declared native.
 		*/
 		System.setProperty( "fuse.fuse4j-core.disabled", "" );
 		try {
+			/*
+			  If this DOES mount, you will have a mounted filesystem
+			  and need to run 'fusermount -u mount', AND the test case
+			  fails!
+			*/
 			FuseMount.mount( args, fs, l );
 			fail( "Expected UnsatisfiedLinkError" );
 		} catch( UnsatisfiedLinkError ule ) {

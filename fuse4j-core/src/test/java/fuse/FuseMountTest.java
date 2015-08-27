@@ -5,6 +5,14 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @author Stuart Maclean
+ *
+ * FuseMountTest.
+ *
+ * @see FuseMount
+ */
+
 public class FuseMountTest extends junit.framework.TestCase {
 
 	/*
