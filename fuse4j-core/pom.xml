@@ -43,7 +43,6 @@
 	   project-local repo.  Alternatively, user could grab sources
 	   from github, see
 	   https://github.com/uw-dims/java-native-loader.git
-      -->
       <repository>
 	<id>fuse4j.local</id>
 	<name>fuse4j-local</name>
@@ -52,6 +51,7 @@
 	  <updatePolicy>always</updatePolicy>
 	</releases>
       </repository>
+      -->
     </repositories>
 
     <build>
