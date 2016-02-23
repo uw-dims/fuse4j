@@ -5,7 +5,7 @@
 
     <groupId>fuse4j</groupId>
     <artifactId>fuse4j-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <packaging>pom</packaging>
 
     <name>Fuse4J Parent</name>
