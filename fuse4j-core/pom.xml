@@ -18,11 +18,18 @@
   </properties>
 
   <dependencies>
+    <!--  Switching to Jitpack, which uses the GitHub repo name
     <dependency>
       <groupId>edu.uw.apl.commons</groupId>
       <artifactId>native-lib-loader</artifactId>
       <version>2.1.0</version>
     </dependency>
+    -->
+        <dependency>
+                <groupId>com.github.uw-dims</groupId>
+                <artifactId>java-native-loader</artifactId>
+                <version>2.1.0</version>
+        </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -36,23 +43,6 @@
     </dependency>
     </dependencies>
 
-    <repositories>
-      <!-- 
-	   To locate our dependent artifacts which are not (yet)
-	   available at Maven Central, we bundle them into this
-	   project-local repo.  Alternatively, user could grab sources
-	   from github, see
-	   https://github.com/uw-dims/java-native-loader.git
-      -->
-      <repository>
-	<id>fuse4j.local</id>
-	<name>fuse4j-local</name>
-	<url>file:${project.basedir}/../.repository</url>
-	<releases>
-	  <updatePolicy>always</updatePolicy>
-	</releases>
-      </repository>
-    </repositories>
 
     <build>
       <defaultGoal>compile</defaultGoal>

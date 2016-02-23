@@ -28,6 +28,14 @@
       </developer>
     </developers>
 
+        <repositories>
+                <repository>
+                        <id>jitpack.io</id>
+                        <url>https://jitpack.io</url>
+                </repository>
+        </repositories>
+
+
     <modules>
         <module>fuse4j-core</module>
         <module>fuse4j-fakefs</module>
